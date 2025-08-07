@@ -1,9 +1,289 @@
-{
-  "name": "HackerWeb",
-  "short_name": "HackerWeb",
-  "start_url": ".",
-  "display": "standalone",
-  "background_color": "#fff",
-  "description": "A readable Hacker News app.",
-  "icons": []
-}
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اپلیکیشن سیگنال‌دهی هوشمند</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        /* Custom styles for dark mode and transitions */
+        .dark .bg-gray-100 { background-color: #111827; }
+        .dark .bg-white { background-color: #1f2937; }
+        .dark .text-gray-900 { color: #f9fafb; }
+        .dark .text-gray-800 { color: #f9fafb; }
+        .dark .text-gray-600 { color: #d1d5db; }
+        .dark .text-gray-500 { color: #9ca3af; }
+        .dark .border-gray-200 { border-color: #374151; }
+        .dark .border-gray-300 { border-color: #4b5563; }
+        .dark .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1); }
+        .dark .ring-gray-200 { ring-color: #4b5563; }
+        .dark .hover\:bg-gray-200:hover { background-color: #374151; }
+        .dark .bg-white\/80 { background-color: rgba(31, 41, 55, 0.8); }
+        .dark .bg-green-100 { background-color: #052e16; }
+        .dark .text-green-800 { color: #6ee7b7; }
+        .dark .bg-red-100 { background-color: #450a0a; }
+        .dark .text-red-800 { color: #fca5a5; }
+
+        /* Modal styles */
+        .modal-backdrop {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 transition-colors duration-300">
+
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-white shadow-lg">
+        <!-- Header -->
+        <header class="sticky top-0 z-20 bg-white/80 backdrop-blur-md border-b border-gray-200 p-4 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-gray-800">سیگنال‌ها</h1>
+            <div class="flex items-center space-x-2 sm:space-x-4">
+                <!-- Market Sentiment Button -->
+                <button id="marketSentimentBtn" class="p-2 rounded-full text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6M7 8h6" />
+                    </svg>
+                </button>
+                <!-- Dark Mode Toggle -->
+                <button id="darkModeToggle" class="p-2 rounded-full text-gray-600 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    <svg id="moon-icon" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                    </svg>
+                    <svg id="sun-icon" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Filters -->
+        <div class="p-4 border-b border-gray-200">
+            <h2 class="text-sm font-semibold text-gray-500 mb-2">فیلترها</h2>
+            <div class="grid grid-cols-3 gap-2 text-sm">
+                <select class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-transparent text-gray-600">
+                    <option>همه ارزها</option>
+                    <option>BTC</option>
+                    <option>ETH</option>
+                    <option>XRP</option>
+                    <option>DOGE</option>
+                    <option>TRX</option>
+                </select>
+                <select class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-transparent text-gray-600">
+                    <option>بیشترین سود</option>
+                    <option>کمترین سود</option>
+                </select>
+                <select class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 bg-transparent text-gray-600">
+                    <option>بالاترین اعتبار</option>
+                    <option>کمترین اعتبار</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Signals List -->
+        <main id="signals-list" class="p-4 space-y-4">
+            <!-- Signal cards will be dynamically populated here -->
+        </main>
+    </div>
+
+    <!-- Base Modal Structure (to be cloned) -->
+    <template id="modal-template">
+        <div class="fixed inset-0 z-30 flex items-center justify-center p-4 hidden">
+            <div class="absolute inset-0 bg-black/50 modal-backdrop opacity-0"></div>
+            <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-sm p-6 transform scale-95 opacity-0">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="modal-title text-lg font-bold text-gray-900"></h3>
+                    <button class="modal-close p-1 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700">
+                        <svg class="w-6 h-6 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" /></svg>
+                    </button>
+                </div>
+                <div class="modal-body text-gray-600 text-sm leading-relaxed">
+                    <div class="modal-loading flex justify-center items-center h-24">
+                        <svg class="animate-spin h-8 w-8 text-indigo-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                    <p class="modal-result hidden"></p>
+                    <p class="modal-error hidden text-red-500 text-center"></p>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <script>
+        // --- MOCK DATA ---
+        const mockSignals = [
+            { id: 1, pair: 'BTC/USDT', logo: 'https://cryptologos.cc/logos/bitcoin-btc-logo.png?v=029', time: '۱۵ دقیقه پیش', type: 'خرید', profit: '+۵.۲٪', credibility: '۹۵٪', entry: '۶۸,۵۰۰' },
+            { id: 2, pair: 'ETH/USDT', logo: 'https://cryptologos.cc/logos/ethereum-eth-logo.png?v=029', time: '۴۵ دقیقه پیش', type: 'فروش', profit: '+۱.۸٪', credibility: '۸۸٪', entry: '۳,۵۱۰' },
+            { id: 3, pair: 'DOGE/USDT', logo: 'https://cryptologos.cc/logos/dogecoin-doge-logo.png?v=029', time: '۱ ساعت پیش', type: 'خرید', profit: '+۱۲.۴٪', credibility: '۷۵٪', entry: '۰.۱۶۲' },
+            { id: 4, pair: 'XRP/USDT', logo: 'https://cryptologos.cc/logos/xrp-xrp-logo.png?v=029', time: '۲ ساعت پیش', type: 'فروش', profit: '+۰.۹٪', credibility: '۹۱٪', entry: '۰.۴۸۵' },
+        ];
+
+        // --- UI ELEMENTS ---
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const moonIcon = document.getElementById('moon-icon');
+        const sunIcon = document.getElementById('sun-icon');
+        const appContainer = document.querySelector('html');
+        const signalsList = document.getElementById('signals-list');
+        const marketSentimentBtn = document.getElementById('marketSentimentBtn');
+        const modalTemplate = document.getElementById('modal-template');
+
+        // --- MODAL FACTORY ---
+        // Creates and manages a modal instance from a template
+        function createModal(id, title) {
+            const modalNode = modalTemplate.content.cloneNode(true).firstElementChild;
+            modalNode.id = id;
+            document.body.appendChild(modalNode);
+
+            const modalTitle = modalNode.querySelector('.modal-title');
+            const modalBackdrop = modalNode.querySelector('.modal-backdrop');
+            const modalContent = modalNode.querySelector('.modal-content');
+            const closeModalBtn = modalNode.querySelector('.modal-close');
+            const loadingSpinner = modalNode.querySelector('.modal-loading');
+            const resultElement = modalNode.querySelector('.modal-result');
+            const errorElement = modalNode.querySelector('.modal-error');
+
+            modalTitle.innerHTML = title;
+
+            const show = () => {
+                modalNode.classList.remove('hidden');
+                loadingSpinner.classList.remove('hidden');
+                resultElement.classList.add('hidden');
+                errorElement.classList.add('hidden');
+                resultElement.textContent = '';
+                setTimeout(() => {
+                    modalBackdrop.classList.remove('opacity-0');
+                    modalContent.classList.remove('scale-95', 'opacity-0');
+                }, 10);
+            };
+
+            const hide = () => {
+                modalBackdrop.classList.add('opacity-0');
+                modalContent.classList.add('scale-95', 'opacity-0');
+                setTimeout(() => modalNode.classList.add('hidden'), 300);
+            };
+            
+            const setResult = (text) => {
+                loadingSpinner.classList.add('hidden');
+                resultElement.textContent = text;
+                resultElement.classList.remove('hidden');
+            };
+            
+            const setError = (text) => {
+                loadingSpinner.classList.add('hidden');
+                errorElement.textContent = text;
+                errorElement.classList.remove('hidden');
+            };
+
+            closeModalBtn.addEventListener('click', hide);
+            modalBackdrop.addEventListener('click', hide);
+            
+            return { show, hide, setResult, setError };
+        }
+        
+        const analysisModal = createModal('analysisModal', '✨ تحلیل هوشمند');
+        const sentimentModal = createModal('sentimentModal', '✨ خلاصه احساسات بازار');
+
+
+        // --- DARK MODE LOGIC ---
+        const setDarkMode = (isDark) => {
+            if (isDark) {
+                appContainer.classList.add('dark');
+                moonIcon.classList.add('hidden');
+                sunIcon.classList.remove('hidden');
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                appContainer.classList.remove('dark');
+                moonIcon.classList.remove('hidden');
+                sunIcon.classList.add('hidden');
+                localStorage.removeItem('darkMode');
+            }
+        };
+
+        darkModeToggle.addEventListener('click', () => setDarkMode(!appContainer.classList.contains('dark')));
+        setDarkMode(localStorage.getItem('darkMode') === 'enabled');
+
+        // --- DYNAMIC SIGNAL CARD RENDERING ---
+        const renderSignals = () => {
+            signalsList.innerHTML = '';
+            mockSignals.forEach(signal => {
+                const signalTypeClass = signal.type === 'خرید' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                const shortPair = signal.pair.split('/')[0];
+                const cardHTML = `
+                    <div class="bg-white p-4 rounded-xl border border-gray-200 shadow-md hover:shadow-lg transition-shadow duration-300 flex flex-col space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center">
+                                <img src="${signal.logo}" alt="${shortPair} Logo" class="w-8 h-8 ml-3 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/32x32/f97316/ffffff?text=${shortPair}';">
+                                <div><p class="font-bold text-lg text-gray-800">${signal.pair}</p><p class="text-xs text-gray-500">${signal.time}</p></div>
+                            </div>
+                            <span class="${signalTypeClass} text-sm font-bold px-3 py-1 rounded-full">${signal.type}</span>
+                        </div>
+                        <div class="grid grid-cols-3 gap-2 text-center text-sm">
+                            <div><p class="text-gray-500">سود</p><p class="font-bold text-green-600">${signal.profit}</p></div>
+                            <div><p class="text-gray-500">اعتبار</p><p class="font-bold text-gray-800">${signal.credibility}</p></div>
+                            <div><p class="text-gray-500">نقطه ورود</p><p class="font-bold text-gray-800">${signal.entry}</p></div>
+                        </div>
+                        <div class="pt-2 border-t border-gray-200">
+                             <button class="gemini-analysis-btn w-full text-center py-2 px-4 rounded-lg font-semibold text-sm bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity" data-pair="${signal.pair}" data-type="${signal.type}">
+                                ✨ تحلیل هوشمند
+                            </button>
+                        </div>
+                    </div>`;
+                signalsList.insertAdjacentHTML('beforeend', cardHTML);
+            });
+        };
+
+        // --- GEMINI API LOGIC ---
+        async function callGemini(prompt, modal) {
+            modal.show();
+            const apiKey = ""; // Handled by the environment
+            const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ parts: [{ text: prompt }] }] };
+
+            try {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (!response.ok) throw new Error(`API request failed with status ${response.status}`);
+                const result = await response.json();
+                const text = result.candidates?.[0]?.content?.parts?.[0]?.text || "تحلیل قابل ارائه‌ای یافت نشد.";
+                modal.setResult(text);
+            } catch (error) {
+                console.error("Error calling Gemini API:", error);
+                modal.setError("خطا در دریافت پاسخ. لطفا دوباره تلاش کنید.");
+            }
+        }
+
+        function getSignalAnalysis(coinPair, signalType) {
+            const prompt = `به عنوان یک تحلیلگر ارز دیجیتال، یک تحلیل کوتاه و ساده برای یک سیگنال '${signalType}' روی جفت ارز '${coinPair}' ارائه بده. به یکی دو مورد از دلایل احتمالی مانند وضعیت اندیکاتور RSI، MACD یا احساسات کلی بازار اشاره کن. پاسخ به زبان فارسی و در حد ۲-۳ جمله کوتاه باشد. مخاطب یک تریدر مبتدی تا متوسط است.`;
+            callGemini(prompt, analysisModal);
+        }
+
+        function getMarketSentiment() {
+            const prompt = `به عنوان یک تحلیلگر ارشد بازار ارزهای دیجیتال، خلاصه‌ای از احساسات کلی امروز بازار (مثلاً صعودی، نزولی یا خنثی) را ارائه بده. به مهم‌ترین اخبار یا رویدادهایی که روی بیت‌کوین و اتریوم تاثیر گذاشته‌اند اشاره کن. پاسخ به زبان فارسی، کوتاه و در حد یک پاراگراف باشد.`;
+            callGemini(prompt, sentimentModal);
+        }
+
+        // --- EVENT LISTENERS ---
+        signalsList.addEventListener('click', (event) => {
+            const analysisButton = event.target.closest('.gemini-analysis-btn');
+            if (analysisButton) {
+                getSignalAnalysis(analysisButton.dataset.pair, analysisButton.dataset.type);
+            }
+        });
+        
+        marketSentimentBtn.addEventListener('click', getMarketSentiment);
+
+        // --- INITIALIZE APP ---
+        document.addEventListener('DOMContentLoaded', renderSignals);
+    </script>
+</body>
+</html>
